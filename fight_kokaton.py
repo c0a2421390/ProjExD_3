@@ -154,6 +154,14 @@ class Score:
         self.img = self.fonto.render("score:"+str(self.score),0,self.color)
         screen.blit(self.img, self.centor)
         
+class Explosion:
+    """
+    爆発エフェクトクラス
+    """
+    def __init__(self):
+        self.exp_list = [pg.image.load(f"fig/explosion.gif"), 
+                         pg.transform.flip(pg.image.load(f"fig/explosion.gif"),True,False),
+                         pg.transform.flip(pg.image.load(f"fig/explosion.gif"),False,True)]
 
 
 def main():
@@ -185,8 +193,6 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
-            
-        print(beams)
         
         for b, bomb in enumerate(bombs):
             for be, beam in enumerate(beams):
