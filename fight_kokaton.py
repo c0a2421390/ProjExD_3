@@ -162,7 +162,7 @@ def main():
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
-    beam = None  # ゲーム初期化時にはビームは存在しない
+    beams = []
     score = Score()
     clock = pg.time.Clock()
     tmr = 0
@@ -172,7 +172,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)
+                beams.append(Beam(bird))
         screen.blit(bg_img, [0, 0])
         
         for b, bomb in enumerate(bombs):
@@ -185,21 +185,29 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
+            
+        print(beams)
         
         for b, bomb in enumerate(bombs):
-            if beam is not None:
-                if beam.rct.colliderect(bomb.rct):
-                    beam = None  # ビームと爆弾が衝突したらビームを消す
-                    bombs[b] = None  # ビームと爆弾が衝突したら爆弾を消す
-                    bird.change_img(6, screen)
-                    score.score += 1
-                    pg.display.update()
+            for be, beam in enumerate(beams):
+                if beam is not None:
+                    if beam.rct.colliderect(bomb.rct):
+                        beams[be] = None  # ビームと爆弾が衝突したらビームを消す
+                        bombs[b] = None  # ビームと爆弾が衝突したら爆弾を消す
+                        bird.change_img(6, screen)
+                        score.score += 1
+                        pg.display.update()
 
+        
         bombs = [bomb for bomb in bombs if bomb is not None]
-
+        beams = [beam for beam in beams if beam is not None]
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None: beam.update(screen)
+        for be,beam in enumerate(beams):
+            if check_bound(beam.rct) == (True, True):
+                beam.update(screen)
+            else:
+                beams[be] = None
         for bomb in bombs: bomb.update(screen)
         score.update(screen)
         pg.display.update()
